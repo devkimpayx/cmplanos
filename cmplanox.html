@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title>Planos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<style>
+:root{
+  --blue:#0d6efd;
+  --blue2:#1a73e8;
+  --white:#ffffff;
+  --gray:#f5f7fb;
+  --gray2:#f9fafb;
+  --border:#e5e7eb;
+  --text:#111827;
+  --muted:#6b7280;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  font-family:"Inter",system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+  background: radial-gradient(1200px 800px at 30% 15%, #1a73e8 0%, #0d47a1 40%, #08307a 70%, #062b6b 100%);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  color:var(--text);
+  -webkit-font-smoothing:antialiased;
+}
+.app{
+  width:100%;
+  max-width:420px;
+  background:var(--white);
+  border-radius:24px;
+  padding:28px;
+  box-shadow:0 30px 80px rgba(3,23,71,.35), 0 8px 20px rgba(3,23,71,.2);
+}
+.logo{
+  width:72px;height:72px;margin:0 auto 14px;
+  background:linear-gradient(180deg,var(--blue2),var(--blue));
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  color:white;font-size:30px;
+  box-shadow:0 12px 24px rgba(13,110,253,.35), inset 0 2px 6px rgba(255,255,255,.2);
+}
+h1{
+  text-align:center;
+  font-size:22px;
+  font-weight:700;
+  letter-spacing:-.2px;
+  color:#1f2937;
+  margin-bottom:22px;
+}
+.toggle-wrap{position:relative;margin-bottom:18px}
+.toggle-pill{
+  background:var(--gray);
+  border-radius:999px;
+  padding:4px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:4px;
+  position:relative;
+  border:1px solid var(--border);
+}
+.toggle-btn{
+  position:relative;
+  border:0;background:transparent;
+  padding:12px 36px 12px 14px;
+  border-radius:999px;
+  font-weight:600;font-size:15px;
+  color:#6b7280;cursor:pointer;
+  z-index:2;transition:color .25s;
+  display:flex;align-items:center;justify-content:center;
+  user-select:none;
+}
+.toggle-btn.active{color:#fff}
+.toggle-btn .plus-btn{
+  position:absolute;right:6px;top:50%;transform:translateY(-50%);
+  width:24px;height:24px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;font-weight:500;line-height:1;
+  background:#e9edf5;color:#6b7280;transition:.2s;
+}
+.toggle-btn.active .plus-btn{
+  background:rgba(255,255,255,.22);
+  color:#fff;
+  border:1px solid rgba(255,255,255,.35);
+  backdrop-filter:blur(2px);
+}
+.toggle-btn .plus-btn:hover{filter:brightness(1.05)}
+.slider{
+  position:absolute;top:4px;left:4px;
+  width:calc(50% - 4px);height:calc(100% - 8px);
+  background:linear-gradient(180deg,var(--blue2),var(--blue));
+  border-radius:999px;
+  box-shadow:0 8px 16px rgba(13,110,253,.35);
+  transition:transform .3s cubic-bezier(.2,.8,.2,1);
+  z-index:1;
+}
+.popover{
+  position:absolute;top:56px;
+  background:#fff;border:1px solid var(--border);
+  border-radius:14px;padding:8px;
+  box-shadow:0 16px 40px rgba(0,0,0,.15);
+  display:flex;gap:6px;
+  opacity:0;transform:translateY(-8px);
+  pointer-events:none;transition:.2s;z-index:20;
+}
+.popover.show{opacity:1;transform:translateY(0);pointer-events:auto}
+#pop-mensal{left:6px}
+#pop-anual{right:6px}
+.popover button{
+  padding:9px 12px;border-radius:10px;
+  border:1px solid var(--border);
+  background:var(--gray2);font-weight:600;
+  color:#374151;cursor:pointer;min-width:44px;
+  transition:.15s;
+}
+.popover button:hover,.popover button.active{
+  background:var(--blue);color:#fff;border-color:var(--blue);
+  box-shadow:0 4px 10px rgba(13,110,253,.25);
+}
+.field{
+  position:relative;
+  background:var(--gray2);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:14px 14px 14px 44px;
+  display:flex;align-items:center;
+  margin-bottom:14px;
+  transition:.2s;
+}
+.field:focus-within{border-color:#bcd3ff;box-shadow:0 0 0 3px rgba(13,110,253,.12);background:#fff}
+.field i.left{
+  position:absolute;left:14px;font-size:18px;color:#22c55e;
+}
+.field input{
+  width:100%;border:0;background:transparent;
+  outline:none;font-size:15px;color:var(--text);
+  font-weight:500;
+}
+.field input::placeholder{color:#9ca3af;font-weight:400}
+.date-field{
+  padding:12px 14px;
+  justify-content:space-between;
+  gap:10px;
+}
+.date-left{display:flex;align-items:center;gap:10px;flex:1;min-width:0}
+.date-left i{color:#6b7280;font-size:16px}
+.label-type{font-weight:600;color:#374151;font-size:14px;white-space:nowrap}
+.days-badge{
+  background:#eef4ff;color:var(--blue2);
+  padding:4px 8px;border-radius:999px;
+  font-size:12px;font-weight:700;white-space:nowrap;
+}
+input[type="date"]{
+  border:1px solid var(--border);background:#fff;
+  padding:9px 10px;border-radius:10px;
+  font-size:14px;color:#111827;font-weight:500;
+  outline:none;min-width:135px;
+}
+input[type="date"]:focus{border-color:#bcd3ff;box-shadow:0 0 0 3px rgba(13,110,253,.12)}
+.btn-somar{
+  width:100%;margin-top:6px;
+  background:linear-gradient(180deg,var(--blue2),var(--blue));
+  color:#fff;border:0;
+  padding:16px;border-radius:14px;
+  font-size:16px;font-weight:700;letter-spacing:.2px;
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  cursor:pointer;box-shadow:0 12px 24px rgba(13,110,253,.3);
+  transition:transform .12s,filter .15s;
+}
+.btn-somar:hover{filter:brightness(1.03)}
+.btn-somar:active{transform:translateY(1px)}
+.results{
+  margin-top:18px;
+  max-height:0;overflow:hidden;
+  transition:max-height .45s cubic-bezier(.2,.8,.2,1);
+}
+.results.show{max-height:400px}
+.results h3{
+  font-size:12px;text-transform:uppercase;letter-spacing:.8px;
+  color:#9aa3b2;font-weight:700;margin-bottom:8px;
+}
+.result-box{
+  background:var(--gray);
+  border:1px solid var(--border);
+  border-radius:14px;padding:16px;
+  font-size:15px;line-height:1.75;
+  color:#1f2937;white-space:pre-line;
+  font-weight:500;
+}
+.actions{
+  display:grid;grid-template-columns:1fr 1fr;gap:12px;
+  margin-top:16px;
+}
+.actions button{
+  background:var(--gray);border:1px solid var(--border);
+  padding:12px;border-radius:12px;font-weight:600;
+  color:#374151;cursor:pointer;display:flex;
+  align-items:center;justify-content:center;gap:8px;
+  font-size:14px;transition:.15s;
+}
+.actions button:hover{background:#eef2ff;border-color:#dbe4ff;color:#1a3fb8}
+.actions button.copied{
+  background:#dcfce7;border-color:#bbf7d0;color:#166534;
+}
+.footer-time{
+  text-align:center;margin-top:20px;padding-top:14px;
+  border-top:1px dashed #e5e7eb;
+  color:#9ca3af;font-size:13px;font-weight:500;
+}
+@media (max-width:390px){
+  .app{padding:22px;border-radius:20px}
+  h1{font-size:20px}
+  input[type="date"]{min-width:120px;padding:8px}
+}
+</style>
+</head>
+<body>
+  <div class="app">
+    <div class="logo"><i class="fa-solid fa-file-signature"></i></div>
+    <h1>Calculadora de Assinatura</h1>
+
+    <div class="toggle-wrap">
+      <div class="toggle-pill" id="togglePill">
+        <button type="button" class="toggle-btn active" data-type="mensal">
+          <span>Mensal</span>
+          <span class="plus-btn" data-pop="mensal">+</span>
+        </button>
+        <button type="button" class="toggle-btn" data-type="anual">
+          <span>Anual</span>
+          <span class="plus-btn" data-pop="anual">+</span>
+        </button>
+        <div class="slider"></div>
+      </div>
+      <div class="popover" id="pop-mensal">
+        <button data-days="28">28</button>
+        <button data-days="29">29</button>
+        <button data-days="30" class="active">30</button>
+        <button data-days="31">31</button>
+      </div>
+      <div class="popover" id="pop-anual">
+        <button data-days="365" class="active">365</button>
+        <button data-days="366">366</button>
+      </div>
+    </div>
+
+    <div class="field">
+      <i class="fa-solid fa-circle-check left"></i>
+      <input id="nomePlano" type="text" placeholder="Nome do Plano" autocomplete="off">
+    </div>
+
+    <div class="field date-field">
+      <div class="date-left">
+        <i class="fa-regular fa-calendar"></i>
+        <span class="label-type" id="labelTipo">Mensal</span>
+        <span class="days-badge" id="daysBadge">30 dias</span>
+      </div>
+      <input type="date" id="dataInicio">
+    </div>
+
+    <button class="btn-somar" id="btnSomar">
+      <i class="fa-regular fa-calendar-check"></i> Somar
+    </button>
+
+    <div class="results" id="results">
+      <h3>Resultados</h3>
+      <div class="result-box" id="resultText"></div>
+    </div>
+
+    <div class="actions">
+      <button id="btnCopiar"><i class="fa-regular fa-copy"></i> Copiar</button>
+      <button id="btnInicio"><i class="fa-solid fa-house"></i> Inicio</button>
+    </div>
+
+    <div class="footer-time" id="clock">São Paulo, --/--/---- --:--:--</div>
+  </div>
+
+<script>
+(function(){
+  const toggleBtns = document.querySelectorAll('.toggle-btn');
+  const slider = document.querySelector('.slider');
+  const labelTipo = document.getElementById('labelTipo');
+  const daysBadge = document.getElementById('daysBadge');
+  const dataInicio = document.getElementById('dataInicio');
+  const btnSomar = document.getElementById('btnSomar');
+  const results = document.getElementById('results');
+  const resultText = document.getElementById('resultText');
+  const btnCopiar = document.getElementById('btnCopiar');
+  const btnInicio = document.getElementById('btnInicio');
+  const popMensal = document.getElementById('pop-mensal');
+  const popAnual = document.getElementById('pop-anual');
+
+  let tipo = 'mensal';
+  let diasMensal = 30;
+  let diasAnual = 365;
+  let lastResult = '';
+
+  // Data padrão: hoje
+  const today = new Date();
+  const tzOffset = today.getTimezoneOffset() * 60000;
+  dataInicio.value = new Date(Date.now() - tzOffset).toISOString().slice(0,10);
+
+  function updateToggle(){
+    toggleBtns.forEach(b => b.classList.toggle('active', b.dataset.type === tipo));
+    slider.style.transform = tipo === 'mensal' ? 'translateX(0%)' : 'translateX(100%)';
+    const dias = tipo === 'mensal' ? diasMensal : diasAnual;
+    labelTipo.textContent = tipo === 'mensal' ? 'Mensal' : 'Anual';
+    daysBadge.textContent = dias + ' dias';
+  }
+
+  toggleBtns.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      if(e.target.classList.contains('plus-btn')) return;
+      tipo = btn.dataset.type;
+      closePops();
+      updateToggle();
+    });
+  });
+
+  function closePops(){ document.querySelectorAll('.popover').forEach(p=>p.classList.remove('show')); }
+
+  document.querySelectorAll('.plus-btn').forEach(pb=>{
+    pb.addEventListener('click', e=>{
+      e.stopPropagation();
+      const pop = document.getElementById('pop-'+pb.dataset.pop);
+      const open = pop.classList.contains('show');
+      closePops();
+      if(!open) pop.classList.add('show');
+    });
+  });
+
+  document.addEventListener('click', e=>{
+    if(!e.target.closest('.popover') && !e.target.closest('.plus-btn')) closePops();
+  });
+
+  popMensal.querySelectorAll('button').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      diasMensal = parseInt(b.dataset.days);
+      popMensal.querySelectorAll('button').forEach(x=>x.classList.remove('active'));
+      b.classList.add('active');
+      if(tipo==='mensal') updateToggle();
+      closePops();
+    });
+  });
+  popAnual.querySelectorAll('button').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      diasAnual = parseInt(b.dataset.days);
+      popAnual.querySelectorAll('button').forEach(x=>x.classList.remove('active'));
+      b.classList.add('active');
+      if(tipo==='anual') updateToggle();
+      closePops();
+    });
+  });
+
+  function fmtDate(d){ return d.toLocaleDateString('pt-BR'); }
+
+  btnSomar.addEventListener('click', ()=>{
+    const nome = document.getElementById('nomePlano').value.trim() || '—';
+    if(!dataInicio.value){ dataInicio.focus(); return; }
+    const inicio = new Date(dataInicio.value + 'T00:00:00');
+    const dias = tipo === 'mensal' ? diasMensal : diasAnual;
+    const venc = new Date(inicio);
+    venc.setDate(venc.getDate() + dias);
+
+    lastResult = `📦 Plano: ${nome}\n✅ Início: ${fmtDate(inicio)}\n🗓 Vencimento: ${fmtDate(venc)}\n⏳ Total de Dias: ${dias}\n🤝 Muito obrigado`;
+    resultText.textContent = lastResult;
+    results.classList.add('show');
+    setTimeout(()=>results.scrollIntoView({behavior:'smooth', block:'nearest'}), 100);
+  });
+
+  btnCopiar.addEventListener('click', async ()=>{
+    if(!lastResult){
+      btnSomar.click();
+      if(!lastResult) return;
+    }
+    try{
+      await navigator.clipboard.writeText(lastResult);
+      const orig = btnCopiar.innerHTML;
+      btnCopiar.innerHTML = '<i class="fa-solid fa-check"></i> Copiado!';
+      btnCopiar.classList.add('copied');
+      setTimeout(()=>{ btnCopiar.innerHTML = orig; btnCopiar.classList.remove('copied'); }, 1500);
+    }catch(e){ alert('Não foi possível copiar'); }
+  });
+
+  btnInicio.addEventListener('click', ()=> location.reload());
+
+  function tick(){
+    const now = new Date();
+    const date = now.toLocaleDateString('pt-BR', {timeZone:'America/Sao_Paulo'});
+    const time = now.toLocaleTimeString('pt-BR', {timeZone:'America/Sao_Paulo'});
+    document.getElementById('clock').textContent = `São Paulo, ${date} ${time}`;
+  }
+  tick();
+  setInterval(tick,1000);
+
+  updateToggle();
+})();
+</script>
+<script>(function(){document.addEventListener("click",function(e){var a=e.target.closest("[data-product-id]");if(!a)return;e.preventDefault();var pid=a.getAttribute("data-product-id");if(pid)parent.postMessage({type:"ecto-artifact-link-click",productId:pid},"*")})})();</script>
+</body>
+</html>

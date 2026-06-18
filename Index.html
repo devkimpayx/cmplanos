@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planos</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Reset e Fontes */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background: radial-gradient(circle at top left, #1e5a99, #0a3a6a);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+        }
+
+        /* Container Principal (Cartão) */
+        .card {
+            background-color: #ffffff;
+            width: 90%;
+            max-width: 400px;
+            border-radius: 16px;
+            padding: 30px 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* Cabeçalho e Logo */
+        .header {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .logo-circle {
+            background-color: #0d6efd;
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            margin: 0 auto 10px auto;
+            box-shadow: 0 4px 10px rgba(13, 110, 253, 0.3);
+        }
+
+        .header h2 {
+            font-size: 1.2rem;
+            color: #000;
+        }
+
+        /* Alternância (Mensal/Anual) */
+        .toggle-container {
+            display: flex;
+            background-color: #f1f5f9;
+            border-radius: 30px;
+            padding: 5px;
+            position: relative;
+        }
+
+        .toggle-btn {
+            flex: 1;
+            text-align: center;
+            padding: 10px 5px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #64748b;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .toggle-btn.active {
+            background-color: #0d6efd;
+            color: #ffffff;
+            box-shadow: 0 4px 6px rgba(13, 110, 253, 0.2);
+        }
+
+        /* Select escondido sob o ícone + */
+        .select-dias {
+            background: transparent;
+            border: none;
+            color: inherit;
+            font-weight: bold;
+            outline: none;
+            cursor: pointer;
+            appearance: none;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+        
+        .select-dias option {
+            color: #333;
+        }
+
+        .toggle-btn i {
+            font-size: 1.1rem;
+        }
+
+        /* Campos de Input */
+        .input-group {
+            display: flex;
+            align-items: center;
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 0 15px;
+            height: 48px;
+            transition: border-color 0.3s ease;
+        }
+
+        .input-group:focus-within {
+            border-color: #0d6efd;
+        }
+
+        .input-group i {
+            color: #10b981; /* Verde pro check */
+            margin-right: 10px;
+            font-size: 1.1rem;
+        }
+        
+        .input-group .fa-calendar-alt {
+            color: #f59e0b; /* Laranja pro calendário */
+        }
+
+        .input-group input {
+            border: none;
+            background: transparent;
+            outline: none;
+            width: 100%;
+            height: 100%;
+            font-size: 0.95rem;
+            color: #333;
+        }
+
+        /* Multi-input para quantidade e data */
+        .multi-input {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .multi-input input[type="number"] {
+            width: 40%;
+            border-right: 1px solid #e2e8f0;
+        }
+
+        .multi-input input[type="date"] {
+            width: 60%;
+            color: #0d6efd;
+            font-weight: bold;
+        }
+
+        /* Botão Somar */
+        .btn-somar {
+            background-color: #0d6efd;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            height: 48px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+        }
+
+        .btn-somar:hover {
+            background-color: #0b5ed7;
+        }
+
+        .btn-somar:active {
+            transform: scale(0.98);
+        }
+
+        /* Resultados (Expansível) */
+        .resultados-container {
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: max-height 0.5s ease, opacity 0.5s ease, margin 0.5s ease;
+        }
+
+        .resultados-container.show {
+            max-height: 400px;
+            opacity: 1;
+            margin-top: 10px;
+        }
+
+        .resultados-titulo {
+            text-align: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: #000;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .resultado-texto {
+            background-color: #f8fafc;
+            border: 1px dashed #cbd5e1;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            margin-bottom: 15px;
+            white-space: pre-wrap;
+        }
+
+        /* Botões de Ação do Rodapé */
+        .action-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-action {
+            flex: 1;
+            background-color: transparent;
+            border: 1px solid #cbd5e1;
+            color: #0d6efd;
+            height: 42px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-action:hover {
+            background-color: #f1f5f9;
+            border-color: #0d6efd;
+        }
+
+        /* Relógio no Rodapé da Página */
+        .relogio {
+            margin-top: 20px;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+            font-weight: 500;
+            letter-spacing: 1px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <div class="header">
+            <div class="logo-circle">
+                <i class="fas fa-file-signature"></i>
+            </div>
+            <h2>Planos</h2>
+        </div>
+
+        <div class="toggle-container">
+            <div class="toggle-btn active" id="btn-mensal" onclick="setMode('mensal')">
+                Mensal <i class="fas fa-plus-circle"></i>
+                <select class="select-dias" id="dias-mensal" onclick="event.stopPropagation()">
+                    <option value="28">28</option>
+                    <option value="29">29</option>
+                    <option value="30" selected>30</option>
+                    <option value="31">31</option>
+                </select>
+            </div>
+            <div class="toggle-btn" id="btn-anual" onclick="setMode('anual')">
+                Anual <i class="fas fa-plus-circle"></i>
+                <select class="select-dias" id="dias-anual" onclick="event.stopPropagation()">
+                    <option value="365" selected>365</option>
+                    <option value="366">366</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="input-group">
+            <i class="far fa-check-circle"></i>
+            <input type="text" id="nome-plano" placeholder="Nome do Plano" autocomplete="off">
+        </div>
+
+        <div class="input-group multi-input">
+            <i class="far fa-calendar-alt"></i>
+            <input type="number" id="quantidade-periodo" placeholder="Qtd (Mês/Ano)" min="1" value="1">
+            <input type="date" id="data-inicio">
+        </div>
+
+        <button class="btn-somar" onclick="calcular()">
+            <i class="far fa-calendar-check"></i> Somar
+        </button>
+
+        <div class="resultados-container" id="resultados">
+            <div class="resultados-titulo">Resultados</div>
+            <div class="resultado-texto" id="texto-resultado"></div>
+            
+            <div class="action-row">
+                <button class="btn-action" onclick="copiar()">
+                    <i class="far fa-copy"></i> Copiar
+                </button>
+                <button class="btn-action" onclick="reiniciar()">
+                    <i class="fas fa-home"></i> Inicio
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="relogio" id="relogio-rodape"></div>
+
+    <script>
+        let modoAtual = 'mensal';
+
+        // Definir a data atual como padrão no input de data ao carregar a página
+        window.onload = () => {
+            document.getElementById('data-inicio').valueAsDate = new Date();
+            atualizarRelogio();
+            setInterval(atualizarRelogio, 1000);
+        };
+
+        // Função para alternar entre Mensal e Anual
+        function setMode(modo) {
+            modoAtual = modo;
+            
+            // Controle de classes CSS
+            document.getElementById('btn-mensal').classList.remove('active');
+            document.getElementById('btn-anual').classList.remove('active');
+            document.getElementById('btn-' + modo).classList.add('active');
+
+            // Trocar o placeholder dinamicamente
+            const inputQtd = document.getElementById('quantidade-periodo');
+            if (modo === 'mensal') {
+                inputQtd.placeholder = "Qtd Meses";
+            } else {
+                inputQtd.placeholder = "Qtd Anos";
+            }
+        }
+
+        // Lógica Principal: Calcular a Data
+        function calcular() {
+            const nomePlano = document.getElementById('nome-plano').value || 'Não informado';
+            const quantidade = parseInt(document.getElementById('quantidade-periodo').value) || 1;
+            const dataInput = document.getElementById('data-inicio').value;
+
+            if (!dataInput) {
+                alert('Por favor, selecione uma data de início válida.');
+                return;
+            }
+
+            // Converter a data do input mantendo a zona de tempo local correta
+            const partesData = dataInput.split('-');
+            const dataInicio = new Date(partesData[0], partesData[1] - 1, partesData[2]);
+
+            // Determinar o multiplicador de dias base (o valor que o usuário escolheu no select do '+')
+            let diasPorPeriodo = 0;
+            if (modoAtual === 'mensal') {
+                diasPorPeriodo = parseInt(document.getElementById('dias-mensal').value);
+            } else {
+                diasPorPeriodo = parseInt(document.getElementById('dias-anual').value);
+            }
+
+            // Calcular total de dias
+            const totalDias = diasPorPeriodo * quantidade;
+
+            // Calcular a data de vencimento
+            const dataVencimento = new Date(dataInicio);
+            dataVencimento.setDate(dataVencimento.getDate() + totalDias);
+
+            // Função para formatar as datas no padrão DD/MM/AAAA
+            const formatarData = (data) => {
+                const dia = String(data.getDate()).padStart(2, '0');
+                const mes = String(data.getMonth() + 1).padStart(2, '0');
+                const ano = data.getFullYear();
+                return `${dia}/${mes}/${ano}`;
+            };
+
+            // Construir o layout do texto do resultado
+            const modeloTexto = 
+`📦 Plano: ${nomePlano}
+✅ Início: ${formatarData(dataInicio)}
+🗓️ Vencimento: ${formatarData(dataVencimento)}
+⏳ Total de Dias: ${totalDias}
+🤝 Muito obrigado`;
+
+            // Inserir o texto e expandir a caixa com animação
+            document.getElementById('texto-resultado').innerText = modeloTexto;
+            document.getElementById('resultados').classList.add('show');
+        }
+
+        // Função para Copiar o texto gerado
+        function copiar() {
+            const texto = document.getElementById('texto-resultado').innerText;
+            navigator.clipboard.writeText(texto).then(() => {
+                alert('Informações copiadas com sucesso!');
+            }).catch(err => {
+                console.error('Erro ao copiar: ', err);
+                alert('Falha ao copiar texto.');
+            });
+        }
+
+        // Função para atualizar a página (Início)
+        function reiniciar() {
+            window.location.reload();
+        }
+
+        // Função do Relógio em Tempo Real no Rodapé
+        function atualizarRelogio() {
+            const agora = new Date();
+            const formatado = agora.toLocaleString('pt-BR', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            document.getElementById('relogio-rodape').innerText = formatado;
+        }
+    </script>
+</body>
+</html>
